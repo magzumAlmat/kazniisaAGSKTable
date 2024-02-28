@@ -1,0 +1,51 @@
+.home__navigation {
+  display: flex;
+  align-items: center;
+  color: #a8a8a8;
+  gap: 10px;
+}
+
+.pizza__item-start {
+  margin-top: 60px;
+  /* height: 300px!important; */
+}
+
+.pizza__item-title {
+  margin: 8px 0;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+.pizza__item-title a {
+  text-decoration: none;
+  color: black;
+}
+
+.pizza__item-title a:hover {
+  color: #ff5722;
+}
+
+.pizza__item-img {
+  height: 200px;
+  width: 200px;
+}
+
+.pizza__item-img:hover {
+  transform: translate(0, 3px);
+}
+
+.pizza__title {
+  font-weight: 600;
+  font-size: 36px;
+}
+
+.pizza__img-button {
+  background-color: transparent;
+  border: 0;
+}
+
+.pizza__item-price {
+  font-weight: 600;
+  font-size: 19px;
+}
