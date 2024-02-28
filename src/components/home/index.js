@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Container, Typography, Divider } from "@mui/material";
+import { Button, Container, Typography, Divider, TextField } from "@mui/material";
 import Header from "@/components/header";
-import WestIcon from '@mui/icons-material/West';
-import EastIcon from '@mui/icons-material/East';
+import WestIcon from "@mui/icons-material/West";
+import EastIcon from "@mui/icons-material/East";
 import {
   getAllProductsAction,
   addToCartProductAction,
@@ -12,12 +12,12 @@ import {
 import Image from "next/image";
 import { Search, Sort, SwapVertOutlined } from "@mui/icons-material";
 import Link from "next/link";
-import 'rsuite/dist/rsuite-no-reset.min.css';
-import { Carousel } from 'rsuite';
+import "rsuite/dist/rsuite-no-reset.min.css";
+import { Carousel } from "rsuite";
 
 export default function Pizzas() {
   const dispatch = useDispatch();
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const crossOptical = useSelector((state) => state.usercart.allProducts);
@@ -37,12 +37,11 @@ export default function Pizzas() {
     return userCart.some((cartItem) => cartItem.id === item.id);
   };
   const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(8);
-  
-    
-    const handlePageChange = (newPage) => {
-      setCurrentPage(newPage);
-    };
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   // console.log("Cross Optical", crossOptical);
 
@@ -97,53 +96,59 @@ export default function Pizzas() {
       return 0;
     });
 
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
 
-    const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  // Calculate the indexes for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
 
-    // Calculate the indexes for the current page
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
-
-    const url=''
-    const url2=''
-    const url3=''
-    const url4=''
-    const url5=''
+  const url = "";
+  const url2 = "";
+  const url3 = "";
+  const url4 = "";
+  const url5 = "";
 
   return (
     <>
       <Container>
-          <Typography variant="h4" className="pizza__title mb-3">
-                {selectedMainType}
-          </Typography>
-        <div className="home__navigation">
+        <Typography variant="h4" className="pizza__title mb-3">
+          {selectedMainType}
+        </Typography>
+        <div className="home__display">
           {/* <span> Главная </span>
           <span> / </span>
           <span> {selectedMainType} </span>
           <span> / </span>
           <span> {selectedType} </span> */}
-      
-        
-            <span>  
-                    <div className="input-group mb-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Поиск"
-                        value={searchTerm}
-                        onChange={handleSearchTermChange}
-                      />
-                      <div className="input-group-append">
-                        <Button
-                          variant="outlined"
-                          startIcon={<Search />}
-                          sx={{ textTransform: "none" }}
-                        >
-                          Найти
-                        </Button>
-                      </div>
-                    </div>
+
+          <span>
+            <div className="home__display-between mb-3">
+              {/* <input
+                type="text"
+                className="form-control"
+                placeholder=" Поиск"
+                value={searchTerm}
+                onChange={handleSearchTermChange}
+              /> */}
+              <TextField
+                label="Поиск"
+                size="small"
+                color="primary"
+                focused
+                onChange={handleSearchTermChange}
+              />
+              <div className="input-group-append">
+                <Button
+                  variant="outlined"
+                  startIcon={<Search />}
+                  sx={{ textTransform: "none" }}
+                  size="normal"
+                >
+                  Найти
+                </Button>
+              </div>
+            </div>
           </span>
         </div>
         <Divider className="mb-2" />
@@ -171,7 +176,7 @@ export default function Pizzas() {
             </div>
           </div> */}
 
-          <div className="mb-3">
+          <div className="sort__button">
             <Button
               onClick={() => setActiveState("1")}
               endIcon={<SwapVertOutlined />}
@@ -187,9 +192,8 @@ export default function Pizzas() {
                 className="pizza__item d-flex flex-column gap-2 col-lg-3 justify-content-between"
               >
                 <div className="pizza__item-start">
-              
                   <Button className="pizza__img-button">
-                  <Carousel className="custom-slider">
+                    <Carousel className="custom-slider">
                       {item.image.split(",").map((imageUrl, imageIndex) => (
                         <img
                           key={imageIndex}
@@ -199,17 +203,19 @@ export default function Pizzas() {
                         />
                       ))}
                     </Carousel>
-                    </Button>
+                  </Button>
                   <Typography variant="h6" className="pizza__item-title">
-                    <Link href={`/product/${item.id}`}>Наименование: {item.name}</Link>
+                    <Link href={`/product/${item.id}`}>
+                      Наименование: {item.name}
+                    </Link>
                   </Typography>
-                
-                    <Typography variant="body2" className="pizza__item-text">
-                      Тип: {item.type}
-                    </Typography>
-                    <Typography variant="body2" className="pizza__item-text">
-                      Описание:{item.description.slice(0, 100)}...
-                    </Typography>
+
+                  <Typography variant="body2" className="pizza__item-text">
+                    Тип: {item.type}
+                  </Typography>
+                  <Typography variant="body2" className="pizza__item-text">
+                    Описание:{item.description.slice(0, 100)}...
+                  </Typography>
                 </div>
                 <div className="pizza__item-end align-items-center d-flex justify-content-between mt-2">
                   <Typography variant="body1" className="pizza__item-price">
@@ -246,22 +252,22 @@ export default function Pizzas() {
               
             </Button>
           </div> */}
-           <div className="pagination" style={{ paddingLeft: '40%', marginTop: '5%' }}>
-              <Button
-                disabled={currentPage === 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-                endIcon={<WestIcon />}
-              >
-              </Button>
-              <span>{`Страница ${currentPage} из ${totalPages}`}</span>
-              <Button
-                disabled={currentPage >= totalPages}
-                onClick={() => handlePageChange(currentPage + 1)}
-                endIcon={<EastIcon />}
-              >
-              </Button>
-            </div>
-
+        <div
+          className="pagination"
+          style={{ paddingLeft: "40%", marginTop: "5%" }}
+        >
+          <Button
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+            endIcon={<WestIcon />}
+          ></Button>
+          <span>{`Страница ${currentPage} из ${totalPages}`}</span>
+          <Button
+            disabled={currentPage >= totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+            endIcon={<EastIcon />}
+          ></Button>
+        </div>
       </Container>
     </>
   );

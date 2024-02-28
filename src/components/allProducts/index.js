@@ -141,8 +141,8 @@ import {
   getAllProductsReducer,
 } from "@/store/slices/productSlice";
 import { Search, Sort, SwapVertOutlined } from "@mui/icons-material";
-import WestIcon from '@mui/icons-material/West';
-import EastIcon from '@mui/icons-material/East';
+import WestIcon from "@mui/icons-material/West";
+import EastIcon from "@mui/icons-material/East";
 import {
   Button,
   Container,
@@ -151,27 +151,25 @@ import {
   Typography,
   TextField,
   MenuItem,
-  
 } from "@mui/material";
 import Image from "next/image";
 import ProductDetails from "@/components/productDetails";
-import { Carousel } from 'rsuite';
-import 'rsuite/dist/rsuite-no-reset.min.css';
+import { Carousel } from "rsuite";
+import "rsuite/dist/rsuite-no-reset.min.css";
 
 const AllProducts = (useeffectStart) => {
-
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const crossOptical = useSelector((state) => state.usercart.allProducts);
   const [sortState, setSortState] = useState("");
-  
+
   const [selectedProductId, setSelectedProductId] = useState(null);
   const host = useSelector((state) => state.usercart.host);
   const selectedMainType = useSelector(
     (state) => state.usercart.selectedMainType
   );
- 
+
   const selectedType = useSelector((state) => state.usercart.selectedType);
   const filteredMainType = crossOptical.filter((item) => {
     if (selectedMainType && selectedMainType !== "Все товары") {
@@ -197,31 +195,31 @@ const AllProducts = (useeffectStart) => {
       return 0;
     });
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(9);
-  
-    // Calculate the indexes for the current page
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(9);
 
-    const handlePageChange = (newPage) => {
-      setCurrentPage(newPage);
-    };
+  // Calculate the indexes for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
 
-    const buttonClick = (item) => {
-      dispatch(addClickCountReducer());
-      dispatch(addToCartProductAction(item));
-    };
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
-    const setActiveState = (number) => {
-      if (sortState == "1") {
-        setSortState("2");
-      } else {
-        setSortState(number);
-      }
-      console.log(sortState);
-    };
+  const buttonClick = (item) => {
+    dispatch(addClickCountReducer());
+    dispatch(addToCartProductAction(item));
+  };
+
+  const setActiveState = (number) => {
+    if (sortState == "1") {
+      setSortState("2");
+    } else {
+      setSortState(number);
+    }
+    console.log(sortState);
+  };
 
   useEffect(() => {
     dispatch(getAllProductsAction());
@@ -233,7 +231,7 @@ const AllProducts = (useeffectStart) => {
 
   const handleGoBack = () => {
     setSelectedProductId(null);
-    dispatch(getAllProductsAction())
+    dispatch(getAllProductsAction());
   };
 
   const handleSearchTermChange = (event) => {
@@ -244,8 +242,6 @@ const AllProducts = (useeffectStart) => {
     setSortDirection(event.target.value);
   };
 
-  
-
   const sortedCrossOptical = crossOptical
     .filter((item) =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -253,124 +249,125 @@ const AllProducts = (useeffectStart) => {
     .filter((item) =>
       selectedMainType ? item.mainType === selectedMainType : true
     )
-    .filter((item) =>
-      selectedType ? item.type === selectedType : true
-    )
+    .filter((item) => (selectedType ? item.type === selectedType : true))
     .sort((a, b) => {
       return sortDirection === "asc" ? a.price - b.price : b.price - a.price;
     });
 
-    console.log('CURR', currentItems);
+  console.log("CURR", currentItems);
 
   return (
     <>
-   
       {selectedProductId ? (
         <ProductDetails productId={selectedProductId} onGoBack={handleGoBack} />
       ) : (
         <Container>
-        {/* <div className="home__navigation">
-          <span> Главная </span>
-          <span> / </span>
-          <span> {selectedMainType} </span>
-          <span> / </span>
-          <span> {selectedType} </span>
-        </div> */}
-        <Divider className="mb-2" />
-          {/* <Typography variant="h4" className="pizza__title mb-3">
-            {selectedMainType}
-          </Typography> */}
-
-          <Divider />
-
-          <div className="search-and-sort">
-            <TextField
-              label="Поиск по наименованию"
-              variant="outlined"
-              value={searchTerm}
-              onChange={handleSearchTermChange}
-            />
-            <div className="mb-3">
-            <Button
-              onClick={() => setActiveState("1")}
-              endIcon={<SwapVertOutlined />}
-            >
-              Сортировать по цене
-            </Button>
-          </div>
-          </div>
-
-          <Divider />
-
+          
+          <Divider className="mb-2" />
           
 
-          <div className="pizza">
+          <Divider />
+          <div className="products__main">
             <Typography variant="h4" className="pizza__title">
               {selectedMainType || "Все товары"}
             </Typography>
 
-            <div className="pizza__body row">
-              {currentItems.map((item, index) => (
-                console.log('item from allProducts111',item),
-                <div
-                  key={index}
-                  className="pizza__item d-flex flex-column gap-5 col-lg-3"
+            <div className="search-and-sort">
+              <TextField
+                label="Поиск по наименованию"
+                variant="outlined"
+                value={searchTerm}
+                onChange={handleSearchTermChange}
+              />
+              <div className="mb-3">
+                <Button
+                  onClick={() => setActiveState("1")}
+                  endIcon={<SwapVertOutlined />}
                 >
-                  <div className="pizza__item-start">
-                 
-                    <Button className="pizza__img-button">
-                    <Carousel className="custom-slider">
-                      {item.image.split(",").map((imageUrl, imageIndex) => (
-                        <img
-                          key={imageIndex}
-                          src={`${host + imageUrl.trim()}`}
-                          alt={`Product image ${imageIndex}`}
-                          style={{ objectFit: "contain", width: "100%" }}
-                        />
-                      ))}
-                    </Carousel>
-                    </Button>
-                    <Typography variant="h6" className="pizza__item-title">
-                      Наименование: {item.name}
-                    </Typography>
-                    <Typography variant="body2" className="pizza__item-text">
-                      Тип: {item.type}
-                    </Typography>
-                    <Typography variant="body2" className="pizza__item-text">
-                      Описание: {item.description.slice(0, 100)}
-                    </Typography>
-
-                  </div>
-                  <div className="pizza__item-end align-items-center d-flex justify-content-between">
-                    <Typography variant="body1" className="pizza__item-price">
-                      Цена: {item.price}
-                    </Typography>
-                    <Button
-                      onClick={() => handleSelectProduct(item.id)}
-                      className="pizza__item-button">
-                      Изменить
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                  Сортировать по цене
+                </Button>
+              </div>
             </div>
           </div>
-          <div className="pagination" style={{'padding-left':'30%'}}>
+
+          <Divider />
+
+          <div className="pizza">
+            <div className="pizza__body row">
+              {currentItems.map(
+                (item, index) => (
+                  console.log("item from allProducts111", item),
+                  (
+                    <div
+                      key={index}
+                      className="pizza__item d-flex flex-column gap-5 col-lg-3"
+                    >
+                      <div className="pizza__item-start">
+                        <Button className="pizza__img-button">
+                          <Carousel className="custom-slider">
+                            {item.image
+                              .split(",")
+                              .map((imageUrl, imageIndex) => (
+                                <img
+                                  key={imageIndex}
+                                  src={`${host + imageUrl.trim()}`}
+                                  alt={`Product image ${imageIndex}`}
+                                  style={{
+                                    objectFit: "contain",
+                                    width: "100%",
+                                  }}
+                                />
+                              ))}
+                          </Carousel>
+                        </Button>
+                        <Typography variant="h6" className="pizza__item-title">
+                          Наименование: {item.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          className="pizza__item-text"
+                        >
+                          Тип: {item.type}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          className="pizza__item-text"
+                        >
+                          Описание: {item.description.slice(0, 100)}
+                        </Typography>
+                      </div>
+                      <div className="pizza__item-end align-items-center d-flex justify-content-between">
+                        <Typography
+                          variant="body1"
+                          className="pizza__item-price"
+                        >
+                          Цена: {item.price}
+                        </Typography>
+                        <Button
+                          onClick={() => handleSelectProduct(item.id)}
+                          className="pizza__item-button"
+                        >
+                          Изменить
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                )
+              )}
+            </div>
+          </div>
+          <div className="pagination" style={{ "padding-left": "30%" }}>
             <Button
               disabled={currentPage === 1}
               onClick={() => handlePageChange(currentPage - 1)}
               endIcon={<WestIcon />}
-            >
-             
-            </Button>
+            ></Button>
             <span>{`Страница ${currentPage}`}</span>
             <Button
               disabled={indexOfLastItem >= sortedProducts.length}
               onClick={() => handlePageChange(currentPage + 1)}
               endIcon={<EastIcon />}
-            >
-              
-            </Button>
+            ></Button>
           </div>
         </Container>
       )}
@@ -379,5 +376,3 @@ const AllProducts = (useeffectStart) => {
 };
 
 export default AllProducts;
-
-

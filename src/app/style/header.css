@@ -87,15 +87,15 @@
 @media screen and (max-width: 440px) {
   html{
     width: 100%;
-    display: block;
+    /* display: block; */
     max-width: 100%;
     /* background-color: #2196f3; */
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
   }
   body{
     padding: 0px!important;
     width: auto!important;
-    overflow-x:hidden!important;
+    /* overflow-x:hidden!important; */
     
   }
   .width100{
@@ -268,6 +268,8 @@
 .header {
   /* background-color: var(--primary-color); */
   background-color: #2196f3;
+  padding: 1rem;
+  margin-bottom: 2rem;
 }
 
 .header__logo {
@@ -334,3 +336,34 @@
   text-decoration: none;
   margin-left: auto;
 }
+
+.phone {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 2rem;
+  justify-content: space-between;
+}
+
+.header__container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  display: flex;
+}
+
+.header__items {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
+
+
+.align-items-center {
+  align-items: center;
+}
+

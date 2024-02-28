@@ -70,14 +70,14 @@ export default function Header() {
   return (
     <>
     <div className="width100">
-      <div className="container phone d-flex gap-2 align-items-center p-2">
+      <div className="phone">
         <span id='slogan'>Мы работаем по всему Казахстану!</span>
         <a href="tel:+77779618253">
           <Phone color="primary" /> +7 (777) 961 82 53
         </a>
       </div>
-      <header className="p-2 header mb-5">
-        <div className="container d-flex align-items-center gap-1">
+      <header className="header__container header">
+        <div className="header__container header__items d-flex align-items-center gap-1">
           <div className="header__left align-items-center d-flex gap-1">
             <Button onClick={buttonClickHome} className="btn">
               <div className="header__logo">
