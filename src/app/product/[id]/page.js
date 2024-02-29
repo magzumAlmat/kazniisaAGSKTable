@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Page({ params }) {
   const crossOptical = useSelector((state) => state.usercart.allProducts);
@@ -40,13 +40,19 @@ export default function Page({ params }) {
   };
 
   return (
-    <div className="container d-flex gap-5 mt-3 align-items-start">
+    <div className="product__details ">
       {product && (
         <>
           <div style={{
             width: '100%'
           }}>
-          <Carousel className="custom-slider">
+            <Typography variant="body2" className="pizza__item-text">
+              {product.type}
+            </Typography>
+            <Typography variant="h4" className="my-3">
+              {product.name}
+            </Typography>
+          <Carousel className="custom-slider custom-slide__mobile">
                 {product.image.split(",").map((imageUrl, imageIndex) => (
                   <img
                     key={imageIndex}
@@ -58,12 +64,6 @@ export default function Page({ params }) {
               </Carousel>
           </div>
           <div>
-            <Typography variant="body2" className="pizza__item-text">
-              {product.type}
-            </Typography>
-            <Typography variant="h4" className="my-3">
-              {product.name}
-            </Typography>
             <Typography variant="h6" className="mb-2">
               Описание товара:
             </Typography>

@@ -128,6 +128,8 @@ export default function Header() {
                 }}
               >
                 <MenuItem
+                
+                id="menu__item"
                   value="Все товары"
                   sx={{
                     display: "flex",
@@ -138,8 +140,10 @@ export default function Header() {
                   <MenuIcon style={{
                     "margin-right": "0.5rem"
                   }} />Все</MenuItem>
+                 
+                  <br></br>
                 {uniqueMainTypes.map((uniqueItem) => (
-                  <MenuItem key={uniqueItem} value={uniqueItem}>
+                  <MenuItem className="second__dropdown" key={uniqueItem} value={uniqueItem}>
                     <div className="dropdown__font">{uniqueItem}</div>
                   </MenuItem>
                 ))}
@@ -190,7 +194,7 @@ export default function Header() {
           </div>
           <div className="header__right">
             {clickCount >= 1 ? (
-              <Button className="CART"
+              <Button 
                 onClick={buttonClick}
                 variant="contained"
                 color="secondary"
@@ -199,11 +203,11 @@ export default function Header() {
               >
                 <div id='CartTitle1'>Корзина</div>
                 <div className="inMods"> </div>
-                <div>{clickCount}</div>
+                <div id='cart__counter'>{clickCount}</div>
               </Button>
 
             ) : (
-              <Button className="CART"
+              <Button 
                 onClick={buttonClick}
                 variant="contained"
                 color="secondary"

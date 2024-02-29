@@ -26,6 +26,15 @@
   /* height: 300px!important; */
 }
 
+.order__container_mobile {
+  flex-direction: column;
+  
+}
+
+.contact__form {
+  width: 500px;
+}
+
 .pizza__item-start p {
   font-size: 10px;
 }
@@ -102,6 +111,18 @@ justify-content: space-between;
   margin-top: 0.5rem;
 }
 
+/* container d-flex gap-5 mt-3 align-items-start */
+.product__details {
+  width: 1000px;
+  margin: 0 auto;
+  flex-direction: column;
+  justify-content: center;
+  display: flex;
+  gap: 2rem;
+  margin-top: 3rem;
+  align-items: start;
+}
+
 @media screen and (max-width: 420px) {
   .pizza__body {
     display: grid;
@@ -126,5 +147,15 @@ justify-content: space-between;
 
   .contact-form__mobile {
     width: 100%;
+  }
+
+  .custom-slide__mobile {
+
+  }
+
+  .product__details {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
   }
 }
