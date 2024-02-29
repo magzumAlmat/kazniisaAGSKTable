@@ -206,20 +206,21 @@ export default function Pizzas() {
                   </Button>
                   <Typography variant="h6" className="pizza__item-title">
                     <Link href={`/product/${item.id}`}>
-                      Наименование: {item.name}
+                      {item.name}
                     </Link>
                   </Typography>
 
                   <Typography variant="body2" className="pizza__item-text">
-                    Тип: {item.type}
+                    {item.type}
                   </Typography>
+                  <br />
                   <Typography variant="body2" className="pizza__item-text">
-                    Описание:{item.description.slice(0, 100)}...
+                    {item.description.slice(0, 100)}...
                   </Typography>
                 </div>
                 <div className="pizza__item-end align-items-center d-flex justify-content-between mt-2">
                   <Typography variant="body1" className="pizza__item-price">
-                    {item.price.toLocaleString()} ₸
+                    Стоимость: {item.price.toLocaleString()} ₸
                   </Typography>
 
                   <Button
@@ -254,7 +255,7 @@ export default function Pizzas() {
           </div> */}
         <div
           className="pagination"
-          style={{ paddingLeft: "40%", marginTop: "5%" }}
+         
         >
           <Button
             disabled={currentPage === 1}

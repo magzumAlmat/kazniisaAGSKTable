@@ -118,10 +118,15 @@
 
   }
 
+  .dropdown__font {
+    width: 390px;
+  }
+
   #dropDownSelectCategory{
     /* display: none!important; */
     margin-left: -10%;
     max-width: 40%;
+    
 
   }
   #dropDownSelectCategory div div svg{
@@ -152,6 +157,14 @@
     justify-content: end;  
     
   }
+  .header__left {
+    width: 6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  
 
   
   .header__right#CartTitle1 {
@@ -335,6 +348,9 @@
   font-weight: 600;
   text-decoration: none;
   margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .phone {
@@ -343,6 +359,13 @@
   align-items: center;
   padding: 2rem;
   justify-content: space-between;
+}
+
+#slogan {
+  color: black;
+  font-weight: 600;
+  text-decoration: none;
+  
 }
 
 .header__container {

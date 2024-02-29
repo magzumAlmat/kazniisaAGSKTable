@@ -24,10 +24,11 @@ export default function Order() {
 
   return (
     <>
-      <Container sx={{ display: "flex", gap: "5" }}>
-        <div style={{ width: "500px" }}>
-          <ContactForm total={total} />
-        </div>
+      <Container
+        className="order__container_mobile"
+        sx={{ display: "flex", gap: "5" }}
+      >
+        <ContactForm className="contact-form__mobile contact__form" total={total} />
         <Table>
           <TableHead>
             <TableRow>

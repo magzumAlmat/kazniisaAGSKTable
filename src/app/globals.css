@@ -28,6 +28,15 @@ main {
   margin-bottom: 100px;
 }
 
-a {
+a, span, p {
   font-family: "Montserrat";
+}
+
+
+
+
+.pagination{
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
 }

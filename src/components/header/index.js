@@ -94,7 +94,8 @@ export default function Header() {
           <div className="d-flex gap-2 catalog" id='dropDownSelectCategory'>
             <FormControl
               sx={{
-                minWidth: 120,
+                minWidth: 100,
+                maxWidth: 170,
                 color: "white",
                 border: "none",
                 "& .MuiOutlinedInput-notchedOutline": {
@@ -134,10 +135,12 @@ export default function Header() {
                     gap: "8px",
                   }}
                 >
-                  <MenuIcon />Все</MenuItem>
+                  <MenuIcon style={{
+                    "margin-right": "0.5rem"
+                  }} />Все</MenuItem>
                 {uniqueMainTypes.map((uniqueItem) => (
                   <MenuItem key={uniqueItem} value={uniqueItem}>
-                    {uniqueItem}
+                    <div className="dropdown__font">{uniqueItem}</div>
                   </MenuItem>
                 ))}
               </Select>

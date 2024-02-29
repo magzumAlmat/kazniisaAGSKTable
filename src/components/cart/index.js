@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import Header from "@/components/header";
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import {
   incrementAction,
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import cartLogo from "../../../public/image/logo/telezhka_pbuneqj5o42t_256.png";
 import Image from "next/image";
 import {
+  Box,
   Button,
   Container,
   Table,
@@ -82,39 +83,43 @@ export default function Cart() {
           >
             Очистить
           </Button>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Название</TableCell>
-                <TableCell>Тип</TableCell>
-                <TableCell>Цена</TableCell>
-                <TableCell>Количество</TableCell>
-                <TableCell>Действия</TableCell>
-                <TableCell>Сумма</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {updatedData.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.type}</TableCell>
-                  <TableCell>{item.price.toLocaleString()}₸</TableCell>
-                  <TableCell align="center">{item.count}</TableCell>
-                  <TableCell>
-                    <Button onClick={() => clickUpCount(item.id)}>
-                      <AddOutlined />
-                    </Button>
-                    <Button onClick={() => clickDownCount(item.id)}>
-                      <RemoveOutlined />
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    {(item.price * item.count).toLocaleString()}₸
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <Box sx={{ overflow: "auto" }}>
+            <Box className='dropdown__onmobile' sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="mobile__fs_10" >Название</TableCell>
+                    <TableCell className="mobile__fs_10">Тип</TableCell>
+                    <TableCell className="mobile__fs_10">Цена</TableCell>
+                    <TableCell className="mobile__fs_10">Количество</TableCell>
+                    <TableCell className="mobile__fs_10">Действия</TableCell>
+                    <TableCell className="mobile__fs_10">Сумма</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody >
+                  {updatedData.map((item, index) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="mobile__fs_10">{item.name}</TableCell>
+                      <TableCell className="mobile__fs_10">{item.type}</TableCell>
+                      <TableCell className="mobile__fs_10">{item.price.toLocaleString()}₸</TableCell>
+                      <TableCell className="mobile__fs_10" align="center">{item.count}</TableCell>
+                      <TableCell className="mobile__fs_10">
+                        <Button onClick={() => clickUpCount(item.id)}>
+                          <AddOutlined />
+                        </Button>
+                        <Button onClick={() => clickDownCount(item.id)}>
+                          <RemoveOutlined />
+                        </Button>
+                      </TableCell>
+                      <TableCell className="mobile__fs_10">
+                        {(item.price * item.count).toLocaleString()}₸
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Box>
           <Button
             onClick={nextClick}
             sx={{ width: "100px", marginTop: "10px" }}
