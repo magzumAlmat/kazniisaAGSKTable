@@ -19,8 +19,13 @@ export const viewport = {
 }
 
 export const metadata = {
+  
   title: "Volokno",
   description: "Volokno",
+  verification: {
+    google: "Qmi_pB30aPPO__Ht7NT-D8VY8E8xKifhiMwMRybaur4",
+  },
+  
 };
 
 
