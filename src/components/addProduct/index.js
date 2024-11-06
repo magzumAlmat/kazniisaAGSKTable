@@ -1,38 +1,70 @@
 import React, { useState } from "react";
-import { createProductAction, getAllProductsAction } from "@/store/slices/productSlice";
+import {
+  createProductAction,
+  getAllProductsAction,
+} from "@/store/slices/productSlice";
 import { useDispatch } from "react-redux";
 import { useDropzone } from "react-dropzone";
 import { useRef } from "react";
-import AllProduct from "../../components/allProducts/index"
+import AllProduct from "../../components/allProducts/index";
 import {
   Container,
   Typography,
   TextField,
   Button,
   TextareaAutosize,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import Image from "next/image";
 import { FileUploadOutlined } from "@mui/icons-material";
 
-const AddProductForm = ({component, setComponent}) => {
-  const [mainType, setProductMainType] = useState("");
-  const [type, setProductType] = useState("");
+const AddProductForm = ({ component, setComponent }) => {
+  const [typeOfGood, setTypeOfGood] = useState("");
+  const [mainType, setMainType] = useState("");
+  const [type, setType] = useState("");
   const [name, setProductName] = useState("");
   const [price, setProductPrice] = useState("");
-  const [productImages, setProductImages] = useState([]); // массив для хранения выбранных файлов
   const [description, setDescription] = useState("");
-  const dispatch = useDispatch();
-  const formData = new FormData();
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const dispatch = useDispatch();
   const inputRef = useRef(null);
+
+  // Словарь категорий
+  const mainTypesByTypeOfGood = {
+    "Продукты": [
+      "Фрукты и овощи",
+      "Молочные продукты",
+      "Мясо и птица",
+      "Рыба и морепродукты",
+      "Замороженные продукты",
+      "Бакалея",
+    ],
+    "Напитки": ["Минеральная вода", "Соки", "Газированные напитки"],
+    "Бытовая химия": ["Моющие средства", "Чистящие средства"],
+    "Товары для дома": ["Кухонные принадлежности", "Салфетки и бумага"],
+  };
+
+  const typesByMainType = {
+    "Фрукты и овощи": ["Свежие фрукты", "Свежие овощи", "Ягоды", "Салатные наборы", "Зелень"],
+    "Молочные продукты": ["Молоко", "Йогурты", "Сыры"],
+    "Мясо и птица": ["Говядина", "Свинина", "Курица"],
+    "Рыба и морепродукты": ["Свежая рыба", "Замороженная рыба", "Морепродукты"],
+    "Замороженные продукты": ["Пельмени", "Овощные смеси", "Мороженое"],
+    "Бакалея": ["Макароны", "Крупы", "Консервы"],
+    "Минеральная вода": ["Газированная", "Негазированная"],
+    "Соки": ["Фруктовые соки", "Овощные соки"],
+    "Газированные напитки": ["Кола", "Лимонад"],
+  };
 
   const handleFileChange1 = (acceptedFiles) => {
     setSelectedFiles(acceptedFiles);
-    console.log(selectedFiles);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*", // specify the file types you want to accept
+    accept: "image/*",
     multiple: true,
     maxFiles: 10,
     onDrop: handleFileChange1,
@@ -41,55 +73,93 @@ const AddProductForm = ({component, setComponent}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("typeOfGood", typeOfGood);
     formData.append("mainType", mainType);
     formData.append("type", type);
     formData.append("name", name);
     formData.append("price", price);
     formData.append("description", description);
+
     selectedFiles.forEach((file) => {
-      console.log(file);
       formData.append("image", file);
     });
 
     dispatch(createProductAction(formData));
-    setTimeout(1000)
+    setTimeout(1000);
     dispatch(getAllProductsAction());
-    
-    setComponent('allProducts')
-    
 
+    setComponent("allProducts");
     setProductName("");
-    setProductMainType("");
-    setProductType("");
+    setMainType("");
+    setType("");
     setProductPrice("");
-    setProductImages([]);
-  };
-
-  const handleFileChange = (e) => {
-    const files = e.target.files;
-    setProductImages([...files]);
+    setTypeOfGood("");
   };
 
   return (
     <Container>
       <Typography variant="h4">Добавление продукта</Typography>
       <form onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          margin="normal"
-          label="Основной тип"
-          value={mainType}
-          onChange={(e) => setProductMainType(e.target.value)}
-          required
-        />
-        <TextField
-          fullWidth
-          margin="normal"
-          label="Категория"
-          value={type}
-          onChange={(e) => setProductType(e.target.value)}
-          required
-        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="typeOfGood-label">Тип товара</InputLabel>
+          <Select
+            labelId="typeOfGood-label"
+            value={typeOfGood}
+            onChange={(e) => {
+              setTypeOfGood(e.target.value);
+              setMainType(""); // Сбросить выбранный основной тип
+              setType(""); // Сбросить выбранную категорию
+            }}
+            required
+          >
+            {Object.keys(mainTypesByTypeOfGood).map((key) => (
+              <MenuItem key={key} value={key}>
+                {key}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {typeOfGood && (
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="mainType-label">Основной тип</InputLabel>
+            <Select
+              labelId="mainType-label"
+              value={mainType}
+              onChange={(e) => {
+                setMainType(e.target.value);
+                setType(""); // Сбросить выбранную категорию
+              }}
+              required
+            >
+              {mainTypesByTypeOfGood[typeOfGood].map((mainTypeOption) => (
+                <MenuItem key={mainTypeOption} value={mainTypeOption}>
+                  {mainTypeOption}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+
+        {mainType && (
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="type-label">Категория</InputLabel>
+            <Select
+              labelId="type-label"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              required
+            >
+              {typesByMainType[mainType].map((typeOption) => (
+                <MenuItem key={typeOption} value={typeOption}>
+                  {typeOption}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+
         <TextField
           fullWidth
           margin="normal"
@@ -109,15 +179,8 @@ const AddProductForm = ({component, setComponent}) => {
         <TextareaAutosize
           minRows={4}
           aria-label="maximum height"
-          placeholder="Введите текст и нажмите Enter для новой строки *"
+          placeholder="Введите описание продукта"
           value={description}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.altKey) {
-              e.preventDefault();
-              setDescription((prevDescription) => prevDescription + "\n");
-              console.log("description", description);
-            }
-          }}
           onChange={(e) => setDescription(e.target.value)}
           style={{
             width: "100%",
@@ -136,53 +199,18 @@ const AddProductForm = ({component, setComponent}) => {
             border: "2px dashed #ddd",
           }}
         >
-          <input
-            {...getInputProps()}
-            ref={inputRef}
-            style={{ display: "none", cursor: "pointer" }}
-          />
+          <input {...getInputProps()} ref={inputRef} style={{ display: "none" }} />
           <FileUploadOutlined sx={{ marginRight: "10px" }} />
           <span>Перетащите сюда файлы</span>
         </div>
-        <Button>
-        <input
-            {...getInputProps()}
-            ref={inputRef}
-            style={{ cursor: "pointer" }}
-          />
-        </Button>
-
         {selectedFiles.length > 0 && (
-          <>
-            <p>Выбранные файлы:</p>
-            <ul>
-              {selectedFiles.map((file) => (
-                <li key={file.name}>{file.name}</li>
-              ))}
-            </ul>
-          </>
+          <ul>
+            {selectedFiles.map((file) => (
+              <li key={file.name}>{file.name}</li>
+            ))}
+          </ul>
         )}
 
-        {selectedFiles.length > 0 &&
-          selectedFiles.map((file) => (
-            <div key={file.name}>
-              <Image
-                src={URL.createObjectURL(file)}
-                alt=""
-                width={400}
-                height={300}
-              />
-            </div>
-          ))}
-
-        <br />
-        {/*<input*/}
-        {/*    type="file"*/}
-        {/*    onChange={handleFileChange}*/}
-        {/*    accept="image/*"*/}
-        {/*    multiple // Позволяет выбирать несколько файлов*/}
-        {/*    required*/}
-        {/*/>*/}
         <Button type="submit" variant="contained" color="primary">
           Добавить продукт
         </Button>

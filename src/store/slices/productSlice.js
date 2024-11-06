@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 let initialState = {
+  error: null,
   userCart: [],
   allProducts: [],
   allOrders: [],
@@ -13,20 +14,21 @@ let initialState = {
   selectedType: "",
   clickCount: 0,
   // host: 'http://178.128.89.246:8000/',
-  //host: 'http://localhost:8000/'
+  host: "http://localhost:8000/",
   // host: 'http://185.129.49.196:8000/',
-  host: 'https://scvolokno.kz/'
-  
-
+  // host: 'https://scvolokno.kz/'
 };
 // const host = useSelector((state) => state.usercart.host);
-// const host = 'http://localhost:8000/';
-const host = 'https://scvolokno.kz/'
+const host = "http://localhost:8000/";
+// const host = 'https://scvolokno.kz/'
 export const userPostsSlice = createSlice({
   name: "usercart",
   initialState,
 
   reducers: {
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
     addClickCountReducer: (state, action) => {
       state.clickCount = state.clickCount + 1;
     },
@@ -95,7 +97,7 @@ export const userPostsSlice = createSlice({
 
     getProductByIdReducer: (state, action) => {
       console.log(action.payload[0].id);
-        state.editedProduct = action.payload[0];
+      state.editedProduct = action.payload[0];
     },
 
     isAuthReducer: (state, action) => {
@@ -112,29 +114,27 @@ export const userPostsSlice = createSlice({
     },
 
     editProductReducer: (state, action) => {
-      
-  const index = state.allProducts.findIndex((product) => product.id == state.editedProduct.id);
+      const index = state.allProducts.findIndex(
+        (product) => product.id == state.editedProduct.id
+      );
 
-  console.log('Индекс продукта в массиве allProducts:', index);
+      console.log("Индекс продукта в массиве allProducts:", index);
 
-  // Если продукт существует, замените его в массиве
-  if (index !== -1) {
-    state.allProducts[index] = state.editedProduct;
-    
-  } else {
-    console.log('Продукт не найден в массиве allProducts');
-  }
+      // Если продукт существует, замените его в массиве
+      if (index !== -1) {
+        state.allProducts[index] = state.editedProduct;
+      } else {
+        console.log("Продукт не найден в массиве allProducts");
+      }
 
-  state.selectedMainType = 'Все товары';
-
-  
+      state.selectedMainType = "Все товары";
     },
 
     deleteProductReducer: (state, action) => {
       state.allProducts = state.allProducts.filter(
         (item) => item.id !== action.payload
       );
-      state.selectedMainType = 'Все товары';
+      state.selectedMainType = "Все товары";
       console.log("State from delete", state.allProducts);
     },
 
@@ -148,6 +148,7 @@ export const userPostsSlice = createSlice({
     setSelectedMainTypeReducer: (state, action) => {
       state.selectedMainType = action.payload;
     },
+
     setSelectedTypeReducer: (state, action) => {
       state.selectedType = action.payload;
     },
@@ -351,71 +352,75 @@ export const editOrderAction = (data, orderId) => async (dispatch) => {
 
 export const createProductAction = (data) => async (dispatch) => {
   for (const value of data.values()) {
-    console.log("formData Values from slice", value);
+    console.log("formData Values from slice check that", value);
   }
 
   try {
-    const response = await axios.post(
-      `${host}api/store/createproduct`,
-      data,
-
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    dispatch(createProductReducer(response.data))
+    const response = await axios.post(`${host}api/store/createproduct`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    dispatch(createProductReducer(response.data));
   } catch (error) {
-    // Handle errors, e.g., by returning an error object
-    throw error;
+    dispatch(setError(error.message));
   }
+  throw error;
 };
 
-export const editProductAction = (mainType, type, name, price, description, productId, selectedFiles) => async (dispatch) => {
+export const editProductAction =
+  (mainType, type, name, price, description, productId, selectedFiles,typeOfGood) =>
+  async (dispatch) => {
+    console.log(
+      "data from editProduct",
+      mainType,
+      type,
+      name,
+      price,
+      selectedFiles,
+      typeOfGood
+    );
 
-  console.log('data from editProduct', mainType, type, name, price, selectedFiles)
+    const formData = new FormData();
 
-  const formData = new FormData();
+    formData.append("mainType", mainType);
+    formData.append("type", type);
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("description", description);
+    formData.append("typeOfGood", typeOfGood);
 
-  
-  formData.append('mainType', mainType);
-  formData.append('type', type);
-  formData.append('name', name);
-  formData.append('price', price);
-  formData.append('description', description);
-  
 
-  if (selectedFiles){
-        selectedFiles.forEach((file) => {
-            console.log(file)
-            formData.append('image', file);
-        });
+    if (selectedFiles) {
+      selectedFiles.forEach((file) => {
+        console.log(file);
+        formData.append("image", file);
+      });
+    }
+    for (const formDatum of formData.values()) {
+      console.log(formDatum);
+    }
 
-}
-  for (const formDatum of formData.values()) {
-      console.log(formDatum)
-  }
+    try {
+      console.log("try ////////////////////////////////");
+      const response = await axios.put(
+        `${host}api/store/product/${productId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-  try {
-      console.log('try ////////////////////////////////')
-      const response = await axios.put(`${host}api/store/product/${productId}`, formData,
-          {
-              headers: {
-                  'Content-Type': 'multipart/form-data',
-              }
-          }
-      )
-
-      console.log('Response---------', response.data);
-      dispatch(editProductReducer())
-      console.log(response.data)
-
-  } catch (error) { // Handle errors, e.g., by returning an error object
+      console.log("Response---------", response.data);
+      dispatch(editProductReducer());
+      console.log(response.data);
+    } catch (error) {
+      // Handle errors, e.g., by returning an error object
       throw error;
-  }
-
-};
+    }
+  };
 
 export const deleteProductAction = (productId) => async (dispatch) => {
   console.log(productId);
@@ -433,9 +438,7 @@ export const deleteProductAction = (productId) => async (dispatch) => {
 export const deleteOrderAction = (productId) => async (dispatch) => {
   console.log(productId);
   try {
-    const response = await axios.delete(
-      `${host}api/store/order/${productId}`
-    );
+    const response = await axios.delete(`${host}api/store/order/${productId}`);
     dispatch(deleteOrderReducer(productId));
   } catch (error) {
     // Handle errors, e.g., by returning an error object
@@ -464,7 +467,7 @@ export const getAllProductsAction = () => async (dispatch) => {
 };
 
 export const getProductByIdAction = (id) => async (dispatch) => {
-  console.log("ID from slice",id);
+  console.log("ID from slice", id);
   try {
     const response = await axios.get(`${host}api/store/product/${id}`);
 
