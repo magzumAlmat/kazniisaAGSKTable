@@ -19,8 +19,13 @@ import {
   TableRow,
   Button,
   TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import { deleteOrderAction } from "@/store/slices/productSlice";
+
 const theme = createTheme();
 
 const OrderDetails = ({ orderId, onGoBack }) => {
@@ -56,17 +61,11 @@ const OrderDetails = ({ orderId, onGoBack }) => {
   // Форматирование в нужный вид
   const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
 
-  console.log(formattedDate);
-
-  console.log("Order State:", order);
-
   useEffect(() => {
     dispatch(editOrderReducer());
     dispatch(getAllOrdersAction());
     dispatch(getAllProductsAction());
   }, [dispatch, allOrders]);
-
-  console.log("Edited order", editedOrderFromSlice);
 
   // Function to trigger the callback when the "Go Back" button is clicked
   const handleGoBack = () => {
@@ -76,16 +75,14 @@ const OrderDetails = ({ orderId, onGoBack }) => {
   const handleDeleteOrder = (id) => {
     dispatch(deleteOrderAction(id));
     dispatch(getAllOrdersAction());
-    setTimeout(2000)
+    setTimeout(2000);
     onGoBack();
-  
-}
+  };
 
   const editOrder = () => {
     dispatch(editOrderAction(editedOrder, orderId));
     dispatch(getOrderAction(orderId));
     setIsEdit(false);
-    console.log("all orders ", allOrders);
   };
 
   const setButton = () => {
@@ -94,6 +91,10 @@ const OrderDetails = ({ orderId, onGoBack }) => {
 
   const handleInputChange = (field, value) => {
     setEditedOrder((prevState) => ({ ...prevState, [field]: value }));
+  };
+
+  const handleStatusChange = (event) => {
+    setEditedOrder((prevState) => ({ ...prevState, status: event.target.value }));
   };
 
   const renderOrderDetails = () => {
@@ -181,12 +182,19 @@ const OrderDetails = ({ orderId, onGoBack }) => {
         />
       </Typography>
       <Typography className="mb-3">
-        <TextField
-          label="Статус заказа"
-          defaultValue={editedOrder.status}
-          onChange={(e) => handleInputChange("status", e.target.value)}
-          className="mb-3"
-        />
+        {/* Order Status Dropdown */}
+        <FormControl fullWidth>
+          <InputLabel>Статус заказа</InputLabel>
+          <Select
+            value={editedOrder.status}
+            onChange={handleStatusChange}
+            label="Статус заказа"
+          >
+            <MenuItem value="В работе">В работе</MenuItem>
+            <MenuItem value="Завершен">Завершен</MenuItem>
+            {/* Add additional status options here */}
+          </Select>
+        </FormControl>
       </Typography>
       <Typography className="mb-3">
         <TextField
@@ -256,21 +264,26 @@ const OrderDetails = ({ orderId, onGoBack }) => {
               </Button>
               {isEdit ? (
                 <>
-                <Button
-                  variant="contained"
-                  color="success"
-                  className="mb-5 mt-3"
-                  onClick={editOrder}
-                >
-                  Сохранить
-                </Button>
-                   <Button variant="contained" color="warning" className="mb-5 mt-3" onClick={() => {handleDeleteOrder(orderId)}}>
-                   Удалить
-               </Button>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    className="mb-5 mt-3"
+                    onClick={editOrder}
+                  >
+                    Сохранить
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    className="mb-5 mt-3"
+                    onClick={() => {
+                      handleDeleteOrder(orderId);
+                    }}
+                  >
+                    Удалить
+                  </Button>
                 </>
-                
               ) : (
-                
                 <Button
                   variant="contained"
                   color="info"
@@ -279,7 +292,6 @@ const OrderDetails = ({ orderId, onGoBack }) => {
                 >
                   Изменить
                 </Button>
-                
               )}
             </Container>
           </TableContainer>
