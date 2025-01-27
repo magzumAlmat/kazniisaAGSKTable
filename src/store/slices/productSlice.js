@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { actions } from "react-table";
 
 let initialState = {
+  alldocuments:[],
   error: null,
   userCart: [],
   allProducts: [],
@@ -87,6 +89,18 @@ export const userPostsSlice = createSlice({
       // Добавьте только новые посты в state.allPosts
       state.allProducts.push(...newProducts);
     },
+
+  
+    getAllDocumentReducer: (state, action) => {
+      // Ensure action.payload is an array
+      const newDocuments = Array.isArray(action.payload) ? action.payload : [];
+      const existingDocumentIds = state.alldocuments.map((doc) => doc.id);
+      const filteredDocuments = newDocuments.filter(
+        (doc) => !existingDocumentIds.includes(doc.id)
+      );
+      state.alldocuments.push(...filteredDocuments);
+    },
+
     filterAllProductsReducer: (state, action) => {
       state.allProducts = action.payload;
     },
@@ -103,9 +117,9 @@ export const userPostsSlice = createSlice({
     isAuthReducer: (state, action) => {
       state.isAuth = action.payload;
     },
-    createProductReducer: (state, action) => {
+    createDocumentReducer: (state, action) => {
       //нужен для обновления всех продуктов
-      state.allProducts = [...state.allProducts, action.payload];
+      state.allProducts = [...state.alldocuments, action.payload];
     },
 
     editOrderReducer: (state, action) => {
@@ -138,11 +152,11 @@ export const userPostsSlice = createSlice({
       console.log("State from delete", state.allProducts);
     },
 
-    deleteOrderReducer: (state, action) => {
-      state.allOrders = state.allOrders.filter(
+    deleteDocumentReducer: (state, action) => {
+      state.alldocuments = state.alldocuments.filter(
         (item) => item.id !== action.payload
       );
-      console.log("State from delete", state.allOrders);
+      console.log("State from delete", state.alldocuments);
     },
 
     setSelectedMainTypeReducer: (state, action) => {
@@ -274,6 +288,8 @@ export const {
   getProductByIdReducer,
   createProductReducer,
   deleteOrderReducer,
+  deleteDocumentReducer,
+  getAllDocumentReducer
 } = userPostsSlice.actions;
 
 export const addToCartProductAction = (item) => async (dispatch) => {
@@ -350,6 +366,19 @@ export const editOrderAction = (data, orderId) => async (dispatch) => {
 //         });
 // }
 
+export const getDocumentAction = (data) => async (dispatch) => {
+  try {
+    const response = await axios.get(`${host}files`);
+    console.log('response from slice = ',response.data)
+    dispatch(getAllDocumentReducer(response.data));
+  } catch (error) {
+    // Handle errors, e.g., by returning an error object
+    throw error;
+  }
+};
+
+
+
 export const createProductAction = (data) => async (dispatch) => {
   for (const value of data.values()) {
     console.log("formData Values from slice check that", value);
@@ -367,6 +396,30 @@ export const createProductAction = (data) => async (dispatch) => {
   }
   throw error;
 };
+
+
+export const createDocumentAction = (file) => async (dispatch) => {
+ 
+    const formData = new FormData();
+    formData.append("file", file); // Use the correct key 'file'
+  
+    try {
+      const response = await axios.post(`${host}upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("File uploaded successfully:", response.data);
+
+  
+    dispatch(createDocumentReducer(response.data));
+  } catch (error) {
+    dispatch(setError(error.message));
+  }
+  throw error;
+};
+
+
 
 export const editProductAction =
   (mainType, type, name, price, description, productId, selectedFiles,typeOfGood) =>
@@ -445,6 +498,18 @@ export const deleteOrderAction = (productId) => async (dispatch) => {
     throw error;
   }
 };
+
+export const deleteDocumentAction = (documentId) => async (dispatch) => {
+  console.log(documentId);
+  try {
+    const response = await axios.delete(`${host}files/${documentId}`);
+    dispatch(deleteDocumentReducer(documentId));
+  } catch (error) {
+    // Handle errors, e.g., by returning an error object
+    throw error;
+  }
+};
+
 
 export const getAllOrdersAction = () => async (dispatch) => {
   try {

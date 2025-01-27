@@ -1,281 +1,180 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Container, Typography, Divider, TextField } from "@mui/material";
-import Header from "@/components/header";
-import WestIcon from "@mui/icons-material/West";
-import EastIcon from "@mui/icons-material/East";
-import {
-  getAllProductsAction,
-  addToCartProductAction,
-  addClickCountReducer,
-} from "@/store/slices/productSlice";
-import Image from "next/image";
-import { Search, Sort, SwapVertOutlined } from "@mui/icons-material";
-import Link from "next/link";
-import "rsuite/dist/rsuite-no-reset.min.css";
-import { Carousel } from "rsuite";
+import { Button, Container, Divider, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { getDocumentAction, deleteDocumentAction,createDocumentAction } from "@/store/slices/productSlice";
+import { useTable } from "react-table";
+import { useDropzone } from "react-dropzone"; // Import the useDropzone hook
 
 export default function Pizzas() {
   const dispatch = useDispatch();
+  const alldocuments = useSelector((state) => state.usercart.alldocuments);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const crossOptical = useSelector((state) => state.usercart.allProducts);
-  const host = useSelector((state) => state.usercart.host);
-  const [sortState, setSortState] = useState("");
-
-  const userCart = useSelector((state) => state.usercart.userCart);
-  const selectedMainType = useSelector(
-    (state) => state.usercart.selectedMainType
-  );
-
-  const selectedType = useSelector((state) => state.usercart.selectedType);
-
-  const clickCount = useSelector((state) => state.usercart.clickCount);
-
-  const isInCart = (item) => {
-    return userCart.some((cartItem) => cartItem.id === item.id);
-  };
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
-
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-  };
-
-  // console.log("Cross Optical", crossOptical);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [documentIdToDelete, setDocumentIdToDelete] = useState(null);
 
   useEffect(() => {
-    dispatch(getAllProductsAction());
-  }, [crossOptical, dispatch]);
+    dispatch(getDocumentAction());
+  }, [dispatch]);
 
-  const handleSearchTermChange = (event) => {
-    setSearchTerm(event.target.value);
+  const handleDeleteClick = (id) => {
+    setDocumentIdToDelete(id); // Set the document ID to be deleted
+    setOpenDialog(true); // Open the dialog
   };
 
-  const handleSortChange = (event) => {
-    setSortBy(event.target.value);
+  const handleConfirmDelete = () => {
+    dispatch(deleteDocumentAction(documentIdToDelete)); // Dispatch the delete action
+    setOpenDialog(false); // Close the dialog
+    setDocumentIdToDelete(null); // Reset the document ID
   };
 
-  const buttonClick = (item) => {
-    dispatch(addClickCountReducer());
-    dispatch(addToCartProductAction(item));
+  const handleCancelDelete = () => {
+    setOpenDialog(false); // Close the dialog without deleting
+    setDocumentIdToDelete(null); // Reset the document ID
   };
 
-  const setActiveState = (number) => {
-    if (sortState == "1") {
-      setSortState("2");
+  const onDrop = (acceptedFiles) => {
+    // Only accept .docx files
+    const docxFiles = acceptedFiles.filter((file) => file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+    if (docxFiles.length > 0) {
+      // Dispatch the upload action for the .docx files
+      console.log('1 ',docxFiles[0])
+      dispatch(createDocumentAction(docxFiles[0])); // You can handle multiple files if needed
     } else {
-      setSortState(number);
+      alert("Please upload only .docx files.");
     }
-    // console.log(sortState);
   };
 
-  const filteredMainType = crossOptical.filter((item) => {
-    if (selectedMainType && selectedMainType !== "Все товары") {
-      return item.mainType === selectedMainType;
-    } else {
-      return true;
-    }
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: ".docx", // Only accept .docx files
   });
 
-  const filteredByType = selectedType
-    ? filteredMainType.filter((item) => item.type === selectedType)
-    : filteredMainType;
+  const columns = useMemo(
+    () => [
+      {
+        Header: "ID",
+        accessor: "id",
+      },
+      {
+        Header: "Name",
+        accessor: "name",
+      },
+      {
+        Header: "MIME Type",
+        accessor: "mimetype",
+      },
+      {
+        Header: "Path",
+        accessor: "path",
+      },
+      {
+        Header: "Created At",
+        accessor: "createdAt",
+        Cell: ({ value }) => new Date(value).toLocaleString(),
+      },
+      {
+        Header: "Updated At",
+        accessor: "updatedAt",
+        Cell: ({ value }) => new Date(value).toLocaleString(),
+      },
+      {
+        Header: "Action",
+        accessor: "action",
+        Cell: ({ row }) => {
+          const { id } = row.original;
+          return (
+            <Button
+              color="error"
+              variant="contained"
+              onClick={() => handleDeleteClick(id)}
+            >
+              Delete
+            </Button>
+          );
+        },
+      },
+    ],
+    []
+  );
 
-  const sortedProducts = filteredByType
-    .filter((item) =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortState === "1") {
-        return a.price - b.price;
-      } else if (sortState === "2") {
-        return b.price - a.price;
-      }
-      return 0;
-    });
-
-  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
-
-  // Calculate the indexes for the current page
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
-
-  const url = "";
-  const url2 = "";
-  const url3 = "";
-  const url4 = "";
-  const url5 = "";
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+    columns,
+    data: alldocuments || [],
+  });
 
   return (
     <>
       <Container>
-        <Typography variant="h4" className="pizza__title mb-3">
-          {selectedMainType}
-        </Typography>
         <div className="home__display">
-          {/* <span> Главная </span>
-          <span> / </span>
-          <span> {selectedMainType} </span>
-          <span> / </span>
-          <span> {selectedType} </span> */}
-
-          <span>
-            <div className="home__display-between mb-3">
-              {/* <input
-                type="text"
-                className="form-control"
-                placeholder=" Поиск"
-                value={searchTerm}
-                onChange={handleSearchTermChange}
-              /> */}
-              <TextField
-                label="Поиск"
-                size="small"
-                color="primary"
-                focused
-                onChange={handleSearchTermChange}
-              />
-              <div className="input-group-append">
-                <Button
-                  variant="outlined"
-                  startIcon={<Search />}
-                  sx={{ textTransform: "none" }}
-                  size="normal"
-                >
-                  Найти
-                </Button>
-              </div>
-            </div>
-          </span>
+          {/* You can add header or breadcrumb navigation here */}
         </div>
         <Divider className="mb-2" />
-        <div className="pizza">
-          {/* <Typography variant="h4" className="pizza__title mb-3">
-            {selectedMainType}
-          </Typography>
 
-          <div className="input-group mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Поиск"
-              value={searchTerm}
-              onChange={handleSearchTermChange}
-            />
-            <div className="input-group-append">
-              <Button
-                variant="outlined"
-                startIcon={<Search />}
-                sx={{ textTransform: "none" }}
-              >
-                Найти
-              </Button>
-            </div>
-          </div> */}
+        {/* Dropzone for file upload */}
+        <div {...getRootProps()} style={{ border: "2px dashed #ccc", padding: "20px", marginBottom: "20px" }}>
+          <input {...getInputProps()} />
+          <p>Drag and drop a .docx file here, or click to select a file</p>
+        </div>
 
-          <div className="sort__button">
-            <Button
-              onClick={() => setActiveState("1")}
-              endIcon={<SwapVertOutlined />}
-            >
-              Сортировать по цене
-            </Button>
-          </div>
-
-          <div className="pizza__body row">
-            {currentItems.map((item, index) => (
-              <div
-                key={index}
-                className="pizza__item d-flex flex-column gap-2 col-lg-3 justify-content-between"
-              >
-                <div className="pizza__item-start">
-                  <Button className="pizza__img-button">
-                    <Carousel className="custom-slider">
-                      {item.image.split(",").map((imageUrl, imageIndex) => (
-                        <img
-                          key={imageIndex}
-                          src={`${host + imageUrl.trim()}`}
-                          alt={`Product image ${imageIndex}`}
-                          style={{ objectFit: "contain", width: "100%" }}
-                        />
-                      ))}
-                    </Carousel>
-                  </Button>
-                  <Typography variant="h6" className="pizza__item-title">
-                    <Link href={`/product/${item.id}`}>
-                      {item.name}
-                    </Link>
-                  </Typography>
-
-                  <Typography variant="body2" className="pizza__item-text">
-                    {item.type}
-                  </Typography>
-                  <br />
-                  <Typography variant="body2" className="pizza__item-text">
-                    {item.description.slice(0, 100)}...
-                  </Typography>
-                </div>
-                <div className="pizza__item-end align-items-center d-flex justify-content-between mt-2">
-                  <Typography variant="body1" className="pizza__item-price">
-                    Стоимость: {item.price.toLocaleString()} ₸
-                  </Typography>
-
-                  <Button
-                    onClick={() => buttonClick(item)}
-                    disabled={isInCart(item)}
-                    variant="contained"
-                    color="primary"
+        <table {...getTableProps()} style={{ border: "solid 1px blue", width: "100%" }}>
+          <thead>
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th
+                    {...column.getHeaderProps()}
+                    style={{
+                      borderBottom: "solid 3px red",
+                      background: "aliceblue",
+                      color: "black",
+                      fontWeight: "bold",
+                    }}
                   >
-                    {isInCart(item) ? "Добавлено" : "В корзину"}
-                  </Button>
-                </div>
-              </div>
+                    {column.render("Header")}
+                  </th>
+                ))}
+              </tr>
             ))}
-          </div>
-        </div>
-        {/* <div className="pagination" style={{'paddingLeft':'40%', 'marginTop':'5%'}}>
-            <Button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              endIcon={<WestIcon />}
-            >
-             
-            </Button>
-            <span>{`Страница ${currentPage}`}</span>
-            <Button
-              disabled={indexOfLastItem >= sortedProducts.length}
-              onClick={() => handlePageChange(currentPage + 1)}
-              endIcon={<EastIcon />}
-            >
-              
-            </Button>
-          </div> */}
-        <div
-          className="pagination"
-         
-        >
-          <Button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-            endIcon={<WestIcon />}
-          ></Button>
-          <span>{`Страница ${currentPage} из ${totalPages}`}</span>
-          <Button
-            disabled={currentPage >= totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-            endIcon={<EastIcon />}
-          ></Button>
-        </div>
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => (
+                    <td
+                      {...cell.getCellProps()}
+                      style={{
+                        padding: "10px",
+                        border: "solid 1px gray",
+                        background: "papayawhip",
+                      }}
+                    >
+                      {cell.render("Cell")}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </Container>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={openDialog} onClose={handleCancelDelete}>
+        <DialogTitle>{"Delete Document?"}</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this document? This action cannot be undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
-
-//TODO: поиск по заказам, фильтрация и сортировка
-//TODO: сортировка/фильтрация и поиск
-//TODO: slider
-//TODO: корзину и оформление заказа как в леруа
-//сделать jwt token или как-то оставлять авторизованным

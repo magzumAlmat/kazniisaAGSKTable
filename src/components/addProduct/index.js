@@ -6,7 +6,7 @@ import {
 import { useDispatch } from "react-redux";
 import { useDropzone } from "react-dropzone";
 import { useRef } from "react";
-import AllProduct from "../../components/allProducts/index";
+import AllProduct from "../allProducts/index";
 import {
   Container,
   Typography,

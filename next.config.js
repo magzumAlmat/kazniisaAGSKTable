@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['https://scvolokno.kz/'],
+        domains: ['http://localhost:3000'],
     },
     distDir: 'build',
 }
