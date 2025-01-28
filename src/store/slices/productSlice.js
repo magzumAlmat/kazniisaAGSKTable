@@ -289,7 +289,8 @@ export const {
   createProductReducer,
   deleteOrderReducer,
   deleteDocumentReducer,
-  getAllDocumentReducer
+  getAllDocumentReducer,
+  createDocumentReducer
 } = userPostsSlice.actions;
 
 export const addToCartProductAction = (item) => async (dispatch) => {
@@ -398,11 +399,15 @@ export const createProductAction = (data) => async (dispatch) => {
 };
 
 
-export const createDocumentAction = (file) => async (dispatch) => {
- 
+export const createDocumentAction = (file,name) => async (dispatch) => {
+    console.log('Название файла пришло в слайс- ', name)
+    // const formData = new FormData();
+    // formData.append("file", file); 
     const formData = new FormData();
-    formData.append("file", file); // Use the correct key 'file'
-  
+    const blob = new Blob([file], { type: file.type });
+    formData.append("file", blob, file.name); // Используем Blob для сохранения имени файла
+    formData.append("name",  name); // Используем Blob для сохранения имени файла
+    setTimeout(async () => {
     try {
       const response = await axios.post(`${host}upload`, formData, {
         headers: {
@@ -410,13 +415,26 @@ export const createDocumentAction = (file) => async (dispatch) => {
         },
       });
       console.log("File uploaded successfully:", response.data);
+      dispatch(createDocumentReducer(response.data));
+    } catch (error) {
+      dispatch(setError(error.message));
+    }
+    })
 
+    // setTimeout(async () => {
+    //   try {
+    //     const response = await axios.post(`${host}upload`, formData, {
+    //       headers: {
+    //         "Content-Type": "multipart/form-data",
+    //       },
+    //     });
+    //     console.log("File uploaded successfully:", response.data);
+    //     dispatch(createDocumentReducer(response.data));
+    //   } catch (error) {
+    //     dispatch(setError(error.message));
+    //   }
+    // }, 2000); 
   
-    dispatch(createDocumentReducer(response.data));
-  } catch (error) {
-    dispatch(setError(error.message));
-  }
-  throw error;
 };
 
 

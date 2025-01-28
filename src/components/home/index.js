@@ -38,7 +38,7 @@ export default function Pizzas() {
     if (docxFiles.length > 0) {
       // Dispatch the upload action for the .docx files
       console.log('1 ',docxFiles[0])
-      dispatch(createDocumentAction(docxFiles[0])); // You can handle multiple files if needed
+      dispatch(createDocumentAction(docxFiles[0],docxFiles[0].name)); // You can handle multiple files if needed
     } else {
       alert("Please upload only .docx files.");
     }
