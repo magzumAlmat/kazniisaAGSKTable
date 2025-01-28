@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Container, Divider, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import { getDocumentAction, deleteDocumentAction,createDocumentAction } from "@/store/slices/productSlice";
+import { getDocumentAction, deleteDocumentAction,createDocumentAction,getDocumentById } from "@/store/slices/productSlice";
 import { useTable } from "react-table";
 import { useDropzone } from "react-dropzone"; // Import the useDropzone hook
 
 export default function Pizzas() {
   const dispatch = useDispatch();
   const alldocuments = useSelector((state) => state.usercart.alldocuments);
-
+  console.log('this is allDocuments- ',alldocuments)
   const [openDialog, setOpenDialog] = useState(false);
   const [documentIdToDelete, setDocumentIdToDelete] = useState(null);
 
@@ -21,6 +21,27 @@ export default function Pizzas() {
     setOpenDialog(true); // Open the dialog
   };
 
+  const handleDownloadClick = (id) => {
+   console.log('id документа',id)
+  //  dispatch(getDocumentById(id))
+
+   alldocuments.map((docs)=>{
+    console.log('map documents',docs)
+    if (docs.id == id){
+      console.log('finded doc= ',docs)
+      let myUrl='http://localhost:8000/'+docs.path
+      console.log('my url= ',myUrl)
+
+      const link = document.createElement('a');
+      link.href = myUrl;
+      link.download = docs.name || 'file'; // Указываем имя файла, если оно есть в docs
+      document.body.appendChild(link); // Добавляем элемент в DOM
+      link.click(); // Программно нажимаем на ссылку
+      document.body.removeChild(link); // Удаляем элемент из DOM после скачивания
+    }
+   })
+
+  };
   const handleConfirmDelete = () => {
     dispatch(deleteDocumentAction(documentIdToDelete)); // Dispatch the delete action
     setOpenDialog(false); // Close the dialog
@@ -59,30 +80,31 @@ export default function Pizzas() {
         Header: "Name",
         accessor: "name",
       },
-      {
-        Header: "MIME Type",
-        accessor: "mimetype",
-      },
-      {
-        Header: "Path",
-        accessor: "path",
-      },
+      // {
+      //   Header: "MIME Type",
+      //   accessor: "mimetype",
+      // },
+      // {
+      //   Header: "Path",
+      //   accessor: "path",
+      // },
       {
         Header: "Created At",
         accessor: "createdAt",
         Cell: ({ value }) => new Date(value).toLocaleString(),
       },
-      {
-        Header: "Updated At",
-        accessor: "updatedAt",
-        Cell: ({ value }) => new Date(value).toLocaleString(),
-      },
+      // {
+      //   Header: "Updated At",
+      //   accessor: "updatedAt",
+      //   Cell: ({ value }) => new Date(value).toLocaleString(),
+      // },
       {
         Header: "Action",
         accessor: "action",
         Cell: ({ row }) => {
           const { id } = row.original;
           return (
+            <>
             <Button
               color="error"
               variant="contained"
@@ -90,9 +112,19 @@ export default function Pizzas() {
             >
               Delete
             </Button>
+            <Button
+            color="error"
+            variant="contained"
+            onClick={() => handleDownloadClick(id)}
+          >
+            Download
+          </Button>
+            </>
           );
         },
       },
+
+      
     ],
     []
   );
