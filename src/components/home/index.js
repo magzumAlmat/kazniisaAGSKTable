@@ -10,18 +10,23 @@ import {
   TextField,
   Typography,
   CircularProgress,
+  Stack,
 } from "@mui/material";
-import { getDocumentAction, deleteDocumentAction, createDocumentAction } from "@/store/slices/productSlice";
+import {
+  getDocumentAction,
+  deleteDocumentAction,
+  createDocumentAction,
+} from "@/store/slices/productSlice";
 import { useDropzone } from "react-dropzone";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/system";
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 
 // Styled components
 const StyledDropzone = styled("div")(({ theme }) => ({
@@ -55,7 +60,9 @@ export default function Pizzas() {
   const itemsPerPage = 3;
   const [isLoading, setIsLoading] = useState(true);
 
-  const { alldocuments, loading, error, host } = useSelector((state) => state.usercart);
+  const { alldocuments, loading, error, host } = useSelector(
+    (state) => state.usercart
+  );
 
   // Filter documents based on search query
   const filteredDocuments = useMemo(() => {
@@ -71,8 +78,8 @@ export default function Pizzas() {
   }, [filteredDocuments, currentPage, itemsPerPage]);
 
   // Calculate total pages
-  const totalPages = useMemo(() =>
-    Math.ceil(filteredDocuments.length / itemsPerPage),
+  const totalPages = useMemo(
+    () => Math.ceil(filteredDocuments.length / itemsPerPage),
     [filteredDocuments, itemsPerPage]
   );
 
@@ -142,7 +149,8 @@ export default function Pizzas() {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        [".docx"],
       "application/msword": [".doc"],
       "application/pdf": [".pdf"],
       "image/vnd.djvu": [".djvu"],
@@ -209,7 +217,11 @@ export default function Pizzas() {
 
   return (
     <Container maxWidth="lg" style={{ padding: "20px" }}>
-      <Typography variant="h4" gutterBottom style={{ color: "#1976D2", marginBottom: "20px" }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        style={{ color: "#1976D2", marginBottom: "20px" }}
+      >
         Document Manager
       </Typography>
 
@@ -243,21 +255,30 @@ export default function Pizzas() {
             {paginatedDocuments.map((row) => (
               <TableRow
                 key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>
                 <TableCell align="right">{row.mimetype}</TableCell>
                 <TableCell align="right">
-                  <button onClick={() => handleDownloadClick(row.id)}>Скачать</button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => handleDeleteClick(row.id)}
-                  >
-                    Delete
-                  </Button>
+                  <Stack direction="row" spacing={2}>
+                    {/* <Button color="secondary">Secondary</Button> */}
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => handleDownloadClick(row.id)}
+                    >
+                      Download
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleDeleteClick(row.id)}
+                    >
+                      Delete
+                    </Button>
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}
@@ -266,19 +287,31 @@ export default function Pizzas() {
       </TableContainer>
 
       <PaginationContainer>
-        <Button onClick={handlePrevPage} disabled={currentPage === 1}>Previous</Button>
-        <Typography>{currentPage} of {totalPages}</Typography>
-        <Button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</Button>
+        <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+          Previous
+        </Button>
+        <Typography>
+          {currentPage} of {totalPages}
+        </Typography>
+        <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+          Next
+        </Button>
       </PaginationContainer>
 
       <Dialog open={openDialog} onClose={handleCancelDelete}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete this document?</Typography>
+          <Typography>
+            Are you sure you want to delete this document?
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelDelete} color="primary">Cancel</Button>
-          <Button onClick={handleConfirmDelete} color="secondary">Delete</Button>
+          <Button onClick={handleCancelDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="secondary">
+            Delete
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>

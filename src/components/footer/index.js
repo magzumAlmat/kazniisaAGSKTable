@@ -10,14 +10,14 @@ export default function Footer() {
       <div className="footer_logo">
         <div className="header__left align-items-center d-flex gap-1">
           <Button className="btn">
-            <div className="header__logo">
+            {/* <div className="header__logo">
               <Image width="38" src={logo} alt="logo pizza" />
-            </div>
+            </div> */}
           </Button>
           <Button className="btn">
             <div className="footer_logo_text">
-              <div className="header__title-text">SCVolokno.kz</div>
-              <div className="footer__text">Cамые лучшие кабеля</div>
+              <div className="header__title-text">Kazniisa.kz</div>
+              <div className="footer__text">instruments</div>
             </div>
           </Button>
         </div>
@@ -26,11 +26,11 @@ export default function Footer() {
           <Link href="#">О компании</Link>
         </div> */}
         <div className="footer__info">
-          <a href="tel:+77779618253" className="footer__phone">
+          {/* <a href="tel:+77779618253" className="footer__phone">
             <Phone color="primary" />
             тел: +7 (777) 961 82 53
           </a>
-          <p>email: scvoloknokz@gmail.com</p>
+          <p>email: scvoloknokz@gmail.com</p> */}
         </div>
       </div>
     </footer>
